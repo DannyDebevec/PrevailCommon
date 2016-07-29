@@ -11,7 +11,11 @@ public class CityGeneratorScript : MonoBehaviour
     [SerializeField]
     public List<GameObject> Prefabs;
 
+    [SerializeField]
+    public List<GameObject> Quirks;
+
     List<GameObject> Blocks;
+    List<GameObject> GeneratedQuirks;
 
     public int CountX = 9;
     public int CountY = 9;
@@ -24,6 +28,42 @@ public class CityGeneratorScript : MonoBehaviour
     public void Generate()
     {
         Generate((int)System.DateTime.UtcNow.Ticks);
+    }
+
+    public void GenerateQuirks()
+    {
+        if (GeneratedQuirks == null)
+        {
+            GeneratedQuirks = new List<GameObject>();
+        }
+        else
+        {
+            GeneratedQuirks.Clear();
+        }
+
+        Random.seed = Seed;
+        for (int i = 0; i < CountX - 1; i++)
+        {
+            for (int j = 0; j < CountY - 1; j++)
+            {
+                var x = i - 4;
+                var z = j - 4;
+
+                GameObject obj;
+                if (Random.Range(0, 100) > 80)
+                {
+                    obj = (GameObject)GameObject.Instantiate(
+                    Quirks[Random.Range(0, Quirks.Count)],
+                    new Vector3(x * 60 + 30, 1, z * 60 + 30),
+                    Quaternion.identity);
+                    obj.transform.SetParent(this.transform, true);
+
+                    NetworkServer.Spawn(obj);
+
+                    GeneratedQuirks.Add(obj);
+                }
+            }
+        }
     }
 
     public void Generate(int value)

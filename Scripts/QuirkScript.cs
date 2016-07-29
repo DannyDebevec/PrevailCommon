@@ -23,21 +23,11 @@ public class QuirkScript : NetworkBehaviour {
 	
 	}
 
-    [Command]
-    public void CmdDestroy()
-    {
-        NetworkServer.Destroy(this.gameObject);
-    }
-
     public void Destroy()
     {
         if (isServer)
         {
             NetworkServer.Destroy(this.gameObject);
-        }
-        else
-        {
-            CmdDestroy();
         }
     }
 }
