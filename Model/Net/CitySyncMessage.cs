@@ -13,6 +13,11 @@ namespace Prevail.Model.Net
 
         public const short MsgId = 300;
 
+        public CitySyncMessage()
+        {
+
+        }
+
         public CitySyncMessage(NetworkReader reader)
         {
             Deserialize(reader);
