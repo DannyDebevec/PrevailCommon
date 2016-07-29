@@ -62,6 +62,11 @@ public class PlayerNetController : NetworkBehaviour
             Reset = Input.GetKey(KeyCode.R);
 
             CmdInput(Vertical, Horizontal, Jump, Fire, Reset);
+
+            if (Character != null)
+            {
+                Camera.main.transform.position = Character.transform.position - (Character.transform.forward * 8f) + (Character.transform.up * 3f);
+            }
         }
     }
 
