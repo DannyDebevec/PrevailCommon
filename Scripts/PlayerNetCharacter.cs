@@ -120,13 +120,13 @@ public class PlayerNetCharacter : NetworkBehaviour
         m_PreviouslyGrounded = m_IsGrounded;
         RaycastHit hitInfo;
 
-        var origin = transform.position + Vector3.up * -0.5f;
-        var size = m_Capsule.radius * (1.0f - shellOffset);
+        var origin = (transform.position + Vector3.up*-0.05f);
+        var size = 0.1f * m_Capsule.radius * (1.0f - shellOffset);
         var direction = Vector3.down;
-        var maxDistance = ((m_Capsule.height) - m_Capsule.radius) + groundCheckDistance;
+        var maxDistance = 0.1f * ((m_Capsule.height) - m_Capsule.radius) + groundCheckDistance;
 
-        //Debug.DrawLine(origin, origin + direction * maxDistance, Color.blue);
-        //Debug.DrawLine(origin, origin + direction * size, Color.red);
+        Debug.DrawLine(origin, origin + direction * maxDistance, Color.blue);
+        Debug.DrawLine(origin, origin + direction * size, Color.red);
 
         if (Physics.SphereCast(origin, size, direction, out hitInfo, maxDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore))
         {
