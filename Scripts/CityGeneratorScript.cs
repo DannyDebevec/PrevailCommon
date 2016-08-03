@@ -54,7 +54,7 @@ public class CityGeneratorScript : MonoBehaviour
                 {
                     obj = (GameObject)GameObject.Instantiate(
                     Quirks[Random.Range(0, Quirks.Count)],
-                    new Vector3(x * 60 + 30, 1, z * 60 + 30),
+                    new Vector3(0.1f*(x * 60 + 30), 0.1f * (1),0.1f*(z * 60 + 30)),
                     Quaternion.identity);
                     obj.transform.SetParent(this.transform, true);
 
@@ -96,14 +96,14 @@ public class CityGeneratorScript : MonoBehaviour
                 {
                     obj = (GameObject)GameObject.Instantiate(
                     CentralPlaza,
-                    new Vector3(x * SizeX * 5 * 2 + x * 5 * 2, 0, z * SizeY * 5 * 2 + z * 5 * 2),
+                    new Vector3(0.1f * (x * SizeX * 5 * 2 + x * 5 * 2), 0, 0.1f * (z * SizeY * 5 * 2 + z * 5 * 2)),
                     Quaternion.identity);
                 }
                 else
                 {
                     obj = (GameObject)GameObject.Instantiate(
                     Prefabs[Random.Range(0, Prefabs.Count)],
-                    new Vector3(x * SizeX * 5 * 2 + x * 5 * 2, 0, z * SizeY * 5 * 2 + z * 5 * 2),
+                    new Vector3(0.1f * (x * SizeX * 5 * 2 + x * 5 * 2), 0, 0.1f * (z * SizeY * 5 * 2 + z * 5 * 2)),
                     Quaternion.Euler(new Vector3(0, Random.Range(0, 3) * 90, 0)));
                 }
                                 
