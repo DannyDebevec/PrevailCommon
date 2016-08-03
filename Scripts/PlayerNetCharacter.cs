@@ -58,16 +58,16 @@ public class PlayerNetCharacter : NetworkBehaviour
             }
         }
     }
-    
-    public void FixedUpdateInput(float vertical, float horizontal, bool jump, bool fire, bool reset, Quaternion rotation)
+
+    public void FixedUpdateInput(float vertical, float horizontal, bool jump, bool fire, bool reset, float rotation)
     {
         if (reset)
         {
             m_rbody.MovePosition(Vector3.zero + Vector3.up * 2f);
             m_rbody.velocity = Vector3.zero;
         }
-        m_rbody.MoveRotation(rotation);
-        m_rbody.AddForce(new Vector3(horizontal, jump ? 1f : 0f, vertical) * 10f);
+        m_rbody.MoveRotation(Quaternion.Euler(new Vector3(0, rotation, 0)));
+        m_rbody.AddForce(10f * (transform.forward * vertical + transform.right * horizontal));
     }
 }
 

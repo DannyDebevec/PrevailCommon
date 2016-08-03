@@ -6,10 +6,7 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class PlayerNetController : NetworkBehaviour
 {
-
     public Camera cam;
-    public MouseLook mouseLook = new MouseLook();
-
 
     PlayerNetCharacter character;
     [SyncVar]
@@ -51,13 +48,16 @@ public class PlayerNetController : NetworkBehaviour
 
     public bool Reset;
 
+    public float Rotation;
+
+    bool MouseLookInit = false;
+
     // Use this for initialization
     void Start()
     {
         if (isLocalPlayer)
         {
             cam = Camera.main;
-            mouseLook.Init(transform, cam.transform);
         }
     }
 
@@ -74,34 +74,67 @@ public class PlayerNetController : NetworkBehaviour
             Fire = Input.GetButton("Fire1");
             Reset = Input.GetKey(KeyCode.R);
 
-            CmdInput(Vertical, Horizontal, Jump, Fire, Reset);
+
+            InternalLockUpdate();
 
             if (Character != null)
             {
-                Camera.main.transform.position = Character.transform.position - (Character.transform.forward * 8f) + (Character.transform.up * 3f);
+                Camera.main.transform.position = Character.transform.position + Vector3.up * 0.5f;
             }
+
+            CmdInput(Vertical, Horizontal, Jump, Fire, Reset, Camera.main.transform.rotation.eulerAngles.y);
+            
         }
     }
 
+    bool m_cursorIsLocked;
+
+    private void InternalLockUpdate()
+    {
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            m_cursorIsLocked = false;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            m_cursorIsLocked = true;
+        }
+
+        if (m_cursorIsLocked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else if (!m_cursorIsLocked)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+
+    float rotX, rotY;
+    float mouseSensitivity = 10f;
+
     private void RotateView()
     {
-        //avoids the mouse looking if the game is effectively paused
-        if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
+        rotX = cam.transform.rotation.eulerAngles.y;
+        rotY = cam.transform.rotation.eulerAngles.x;
 
-        // get the rotation before it's changed
-        float oldYRotation = transform.eulerAngles.y;
+        rotX = rotX + Input.GetAxis("Mouse X") * mouseSensitivity;
+        rotY = ClampAngle(rotY - (Input.GetAxis("Mouse Y") * mouseSensitivity), -80f, 80f);
 
-        mouseLook.LookRotation(transform, cam.transform);
+        cam.transform.rotation = Quaternion.Euler(new Vector3(rotY, rotX, 0));
     }
 
     [Command]
-    void CmdInput(float vertical, float horizontal, bool jump, bool fire, bool reset)
+    void CmdInput(float vertical, float horizontal, bool jump, bool fire, bool reset, float rotation)
     {
         Vertical = vertical;
         Horizontal = horizontal;
         Jump = jump;
         Fire = fire;
         Reset = reset;
+        Rotation = rotation;
     }
 
 
@@ -109,8 +142,21 @@ public class PlayerNetController : NetworkBehaviour
     {
         if (Character != null && GameStarted)
         {
-            Character.FixedUpdateInput(Vertical, Horizontal, Jump, Fire, Reset, cam.transform.rotation);
+            Character.FixedUpdateInput(Vertical, Horizontal, Jump, Fire, Reset, Rotation);
         }
+    }
+
+    float ClampAngle(float angle, float min, float max)
+    {
+        if (angle < 90 || angle > 270)
+        {       // if angle in the critic region...
+            if (angle > 180) angle -= 360;  // convert all angles to -180..+180
+            if (max > 180) max -= 360;
+            if (min > 180) min -= 360;
+        }
+        angle = Mathf.Clamp(angle, min, max);
+        if (angle < 0) angle += 360;  // if angle negative, convert to 0..360
+        return angle;
     }
 }
 
