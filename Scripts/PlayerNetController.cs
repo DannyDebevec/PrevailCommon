@@ -2,9 +2,15 @@
 using UnityEngine.Networking;
 using System.Collections;
 using Prevail.Model;
+using UnityStandardAssets.Characters.FirstPerson;
 
 public class PlayerNetController : NetworkBehaviour
 {
+
+    public Camera cam;
+    public MouseLook mouseLook = new MouseLook();
+
+
     PlayerNetCharacter character;
     [SyncVar]
     public uint character_nId;
@@ -48,6 +54,11 @@ public class PlayerNetController : NetworkBehaviour
     // Use this for initialization
     void Start()
     {
+        if (isLocalPlayer)
+        {
+            cam = Camera.main;
+            mouseLook.Init(transform, cam.transform);
+        }
     }
 
     // Update is called once per frame
@@ -55,6 +66,8 @@ public class PlayerNetController : NetworkBehaviour
     {
         if (isLocalPlayer && GameStarted)
         {
+            RotateView();
+
             Vertical = Input.GetAxis("Vertical");
             Horizontal = Input.GetAxis("Horizontal");
             Jump = Input.GetButton("Jump");
@@ -63,6 +76,17 @@ public class PlayerNetController : NetworkBehaviour
 
             CmdInput(Vertical, Horizontal, Jump, Fire, Reset);
         }
+    }
+
+    private void RotateView()
+    {
+        //avoids the mouse looking if the game is effectively paused
+        if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
+
+        // get the rotation before it's changed
+        float oldYRotation = transform.eulerAngles.y;
+
+        mouseLook.LookRotation(transform, cam.transform);
     }
 
     [Command]
@@ -80,7 +104,7 @@ public class PlayerNetController : NetworkBehaviour
     {
         if (Character != null && GameStarted)
         {
-            Character.FixedUpdateInput(Vertical, Horizontal, Jump, Fire, Reset);
+            Character.FixedUpdateInput(Vertical, Horizontal, Jump, Fire, Reset, cam.transform.rotation);
         }
     }
 }
