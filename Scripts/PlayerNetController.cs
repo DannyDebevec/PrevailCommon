@@ -50,12 +50,20 @@ public class PlayerNetController : NetworkBehaviour
 
     public float Rotation;
 
+    public bool offline = false;
+
+    public bool IsLocalPlayer { get
+        {
+            return offline || base.isLocalPlayer;
+        }
+    }
+
     bool MouseLookInit = false;
 
     // Use this for initialization
     void Start()
     {
-        if (isLocalPlayer)
+        if (IsLocalPlayer)
         {
             cam = Camera.main;
         }
@@ -64,7 +72,7 @@ public class PlayerNetController : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isLocalPlayer && GameStarted)
+        if (IsLocalPlayer && GameStarted)
         {
             RotateView();
 
@@ -73,7 +81,7 @@ public class PlayerNetController : NetworkBehaviour
             Jump = Input.GetButton("Jump");
             Fire = Input.GetButton("Fire1");
             Reset = Input.GetKey(KeyCode.R);
-
+            Rotation = Camera.main.transform.rotation.eulerAngles.y;
 
             InternalLockUpdate();
 
@@ -82,8 +90,10 @@ public class PlayerNetController : NetworkBehaviour
                 Camera.main.transform.position = Character.transform.position + Vector3.up * 0.5f;
             }
 
-            CmdInput(Vertical, Horizontal, Jump, Fire, Reset, Camera.main.transform.rotation.eulerAngles.y);
-            
+            if (!offline)
+            {
+                CmdInput(Vertical, Horizontal, Jump, Fire, Reset, Rotation);
+            }
         }
     }
 

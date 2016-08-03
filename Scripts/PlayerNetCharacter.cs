@@ -7,6 +7,9 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerNetCharacter : NetworkBehaviour
 {
+    public float MaxVelocity = 10f;
+    public float MassMultiplier = 50f;
+
     PlayerNetController controller;
     [SyncVar]
     uint controller_nId;
@@ -28,19 +31,15 @@ public class PlayerNetCharacter : NetworkBehaviour
         }
     }
 
-    private Rigidbody m_rbody;
+    private Rigidbody m_RigidBody;
     private Renderer m_renderer;
 
     // Use this for initialization
     void Start()
     {
-        m_rbody = GetComponent<Rigidbody>();
+        m_Capsule = GetComponent<CapsuleCollider>();
+        m_RigidBody = GetComponent<Rigidbody>();
         m_renderer = GetComponent<Renderer>();
-
-        if (isServer)
-        {
-            //SyncRigidbody(NetworkInterval);
-        }
     }
     
     // Update is called once per frame
@@ -59,15 +58,106 @@ public class PlayerNetCharacter : NetworkBehaviour
         }
     }
 
+    public float JumpForce = 30f;
+
     public void FixedUpdateInput(float vertical, float horizontal, bool jump, bool fire, bool reset, float rotation)
     {
+        GroundCheck();
+
         if (reset)
         {
-            m_rbody.MovePosition(Vector3.zero + Vector3.up * 2f);
-            m_rbody.velocity = Vector3.zero;
+            m_RigidBody.MovePosition(Vector3.zero + Vector3.up * 2f);
+            m_RigidBody.velocity = Vector3.zero;
         }
-        m_rbody.MoveRotation(Quaternion.Euler(new Vector3(0, rotation, 0)));
-        m_rbody.AddForce(10f * (transform.forward * vertical + transform.right * horizontal));
+        m_RigidBody.MoveRotation(Quaternion.Euler(new Vector3(0, rotation, 0)));
+
+        var localVelociy = transform.InverseTransformDirection(m_RigidBody.velocity);
+        
+        if (Mathf.Abs(localVelociy.x) < MaxVelocity || (localVelociy.x < 0 && horizontal > 0) || (localVelociy.x > 0 && horizontal < 0))
+        {
+            m_RigidBody.AddForce(MassMultiplier * (transform.right * horizontal));
+        }
+        if (Mathf.Abs(localVelociy.z) < MaxVelocity || (localVelociy.z < 0 && horizontal > 0) || (localVelociy.z > 0 && horizontal < 0))
+        {
+            m_RigidBody.AddForce(MassMultiplier * (transform.forward * vertical));
+        }
+        if (horizontal == 0 && vertical == 0)
+        {
+            m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x * 0.9f,m_RigidBody.velocity.y,m_RigidBody.velocity.z * 0.9f);
+        }
+
+        if (m_IsGrounded)
+        {
+            m_RigidBody.drag = 1f;
+
+            if (jump)
+            {
+                m_RigidBody.drag = 0f;
+                m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x, 0f, m_RigidBody.velocity.z);
+                m_RigidBody.AddForce(new Vector3(0f, JumpForce, 0f), ForceMode.Impulse);
+                m_Jumping = true;
+            }
+        }
+        else
+        {
+            m_RigidBody.drag = 0f;
+            if (m_PreviouslyGrounded && !m_Jumping)
+            {
+                StickToGroundHelper();
+            }
+        }
+    }
+    
+    private CapsuleCollider m_Capsule;
+    private Vector3 m_GroundContactNormal;
+    private bool m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
+    public float shellOffset = 0.1f;
+    public float groundCheckDistance = 0.01f;
+
+    /// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
+    private void GroundCheck()
+    {
+        m_PreviouslyGrounded = m_IsGrounded;
+        RaycastHit hitInfo;
+
+        var origin = transform.position + Vector3.up * -0.5f;
+        var size = m_Capsule.radius * (1.0f - shellOffset);
+        var direction = Vector3.down;
+        var maxDistance = ((m_Capsule.height) - m_Capsule.radius) + groundCheckDistance;
+
+        //Debug.DrawLine(origin, origin + direction * maxDistance, Color.blue);
+        //Debug.DrawLine(origin, origin + direction * size, Color.red);
+
+        if (Physics.SphereCast(origin, size, direction, out hitInfo, maxDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+        {
+            m_IsGrounded = true;
+            m_GroundContactNormal = hitInfo.normal;
+        }
+        else
+        {
+            m_IsGrounded = false;
+            m_GroundContactNormal = Vector3.up;
+        }
+        if (!m_PreviouslyGrounded && m_IsGrounded && m_Jumping)
+        {
+            m_Jumping = false;
+        }
+    }
+
+    public float stickToGroundHelperDistance = 0.5f; // stops the character
+
+    private void StickToGroundHelper()
+    {
+        RaycastHit hitInfo;
+        if (Physics.SphereCast(transform.position, m_Capsule.radius * (1.0f - shellOffset), Vector3.down, out hitInfo,
+                               ((m_Capsule.height / 2f) - m_Capsule.radius) +
+                               stickToGroundHelperDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+        {
+            if (Mathf.Abs(Vector3.Angle(hitInfo.normal, Vector3.up)) < 85f)
+            {
+                m_RigidBody.velocity = Vector3.ProjectOnPlane(m_RigidBody.velocity, hitInfo.normal);
+            }
+        }
     }
 }
 
