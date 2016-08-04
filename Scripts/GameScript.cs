@@ -26,6 +26,9 @@ public class GameScript : NetworkBehaviour
 
     public Text StatusText;
 
+    [SyncVar]
+    public string Text;
+
     // Use this for initialization
     void Start()
     {
@@ -40,24 +43,26 @@ public class GameScript : NetworkBehaviour
             Debug.Log("Started: " + TimeRemaining);
             if (isServer)
             {
-                TimeRemaining -= Time.deltaTime*10f;
+                TimeRemaining -= Time.deltaTime * 10f;
+
+                var areAllCharsDead = Characters.All(c => c.Health <= 0);
+
+                if (TimeRemaining <= 0 && areAllCharsDead)
+                {
+                    BossWins = areAllCharsDead;
+                    Text = BossWins ? "The Boss has won!" : "The Mob have survived, they win!";
+                    Ended = true;
+                }
+                else
+                {
+                    Text = "Time Left: " + Mathf.Ceil(TimeRemaining) + "s";
+                }
             }
 
-            var areAllCharsDead = Characters.All(c => c.Health <= 0);
-
-            if (TimeRemaining <= 0 && areAllCharsDead)
-            {
-                BossWins = areAllCharsDead;
-                StatusText.text = BossWins ? "The Boss has won!" : "The Mob have survived, they win!";
-                Ended = true;
-            }
-            else
-            {
-                StatusText.text = "Time Left: " + Mathf.Ceil(TimeRemaining) + "s";
-            }
+            StatusText.text = Text;
         }
     }
-    
+
     public void StartGame()
     {
         TimeRemaining = MaxTime;

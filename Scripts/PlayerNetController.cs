@@ -41,7 +41,7 @@ public class PlayerNetController : NetworkBehaviour
     {
         throw new NotImplementedException();
     }
-    
+
     public bool GameStarted
     {
         get
@@ -106,7 +106,7 @@ public class PlayerNetController : NetworkBehaviour
 
             if (Character != null)
             {
-                Camera.main.transform.position = Character.transform.position + Vector3.up * 0.5f;
+                Camera.main.transform.position = Character.transform.position + (Vector3.up * 0.08f);
             }
             else
             {

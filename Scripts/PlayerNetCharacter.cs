@@ -22,6 +22,29 @@ public class PlayerNetCharacter : NetworkBehaviour
         if (isServer)
         {
 
+            if (col.gameObject.tag == "HealthQuirk")
+            {
+                MaxHealth += 30f;
+                Health = MaxHealth;
+                Destroy(col.gameObject);
+                Network.Destroy(col.gameObject);
+                return;
+            }
+            else if (col.gameObject.tag == "JumpUpQuirk")
+            {
+                JumpForce += 5f;
+                Destroy(col.gameObject);
+                Network.Destroy(col.gameObject);
+                return;
+            }
+            else if (col.gameObject.tag == "SpeedUpQuirk")
+            {
+                MaxVelocity += 0.3f;
+                Destroy(col.gameObject);
+                Network.Destroy(col.gameObject);
+                return;
+            }
+
             var dmg = Mathf.Round(Mathf.Clamp(col.relativeVelocity.magnitude * ImpactDamageMultiplier, 0f, ImpactMaxDamage));
 
             Debug.Log("Hurt: " + col.relativeVelocity.magnitude + ", " + dmg);
@@ -46,6 +69,7 @@ public class PlayerNetCharacter : NetworkBehaviour
         }
     }
 
+    [SyncVar]
     public float MaxVelocity = 1f;
     public float MassMultiplier = 50f;
 
@@ -97,6 +121,7 @@ public class PlayerNetCharacter : NetworkBehaviour
         }
     }
 
+    [SyncVar]
     public float JumpForce = 30f;
 
     public void FixedUpdateInput(float vertical, float horizontal, bool jump, bool fire, bool reset, float rotation)
@@ -145,7 +170,7 @@ public class PlayerNetCharacter : NetworkBehaviour
                 StickToGroundHelper();
             }
         }
-        
+
         var pos = m_RigidBody.position;
         pos.x = Mathf.Clamp(pos.x, -22f, 22f);
         pos.z = Mathf.Clamp(pos.z, -22f, 22f);
