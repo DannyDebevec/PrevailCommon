@@ -40,7 +40,7 @@ public class PlayerNetController : NetworkBehaviour
 
     internal void RpcDie()
     {
-        throw new NotImplementedException();
+        Debug.Log("Dieded :(");
     }
 
     public bool GameStarted
@@ -95,7 +95,7 @@ public class PlayerNetController : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (IsLocalPlayer && GameStarted)
+        if (IsLocalPlayer)
         {
             RotateView();
 
@@ -117,7 +117,7 @@ public class PlayerNetController : NetworkBehaviour
             {
             }
 
-            if (!offline)
+            if (!offline && GameStarted)
             {
                 CmdInput(Vertical, Horizontal, Jump, Fire, Reset, Rotation);
             }

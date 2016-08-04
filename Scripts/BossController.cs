@@ -26,14 +26,6 @@ public class BossController : NetworkBehaviour {
     	
 	// Update is called once per frame
 	void Update () {
-        //if (m_renderer.material.color != Color)
-        //{
-        //    m_renderer.material.color = Color;
-        //}
-        //if (name != Name)
-        //{
-        //    name = Name;
-        //}
 
         if (isLocalPlayer && GameScript.Instance.Started)
         {

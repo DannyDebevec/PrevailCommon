@@ -24,43 +24,40 @@ public class PlayerNetCharacter : NetworkBehaviour
 
             if (col.gameObject.tag == "HealthQuirk")
             {
+                Debug.Log("HealthQuirk");
                 MaxHealth += 30f;
                 Health = MaxHealth;
-                Network.Destroy(col.gameObject);
-                Destroy(col.gameObject); 
+                NetworkServer.Destroy(col.gameObject);
                 return;
             }
-            else if (col.gameObject.tag == "JumpUpQuirk")
+            else if (col.gameObject.tag == "JumpQuirk")
             {
+                Debug.Log("JumpUpQuirk");
                 JumpForce += 5f;
-                Network.Destroy(col.gameObject);
-                Destroy(col.gameObject);
+                NetworkServer.Destroy(col.gameObject);
                 return;
             }
-            else if (col.gameObject.tag == "SpeedUpQuirk")
+            else if (col.gameObject.tag == "SpeedQuirk")
             {
+                Debug.Log("SpeedUpQuirk");
                 MaxVelocity += 0.3f;
-                Network.Destroy(col.gameObject);
-                Destroy(col.gameObject);
+                NetworkServer.Destroy(col.gameObject);
                 return;
             }
 
             var dmg = Mathf.Round(Mathf.Clamp(col.relativeVelocity.magnitude * ImpactDamageMultiplier, 0f, ImpactMaxDamage));
-
-            //Debug.Log("Hurt: " + col.relativeVelocity.magnitude + ", " + dmg);
-
+            
             if (dmg <= ImpactMinDamage)
             {
                 return;
             }
 
             Health = Mathf.Clamp(Health - dmg, 0f, 100f);
-
-
+            
             if (Health <= 0)
             {
                 Controller.RpcDie();
-                Destroy(this.gameObject);
+                NetworkServer.Destroy(this.gameObject);
             }
             else
             {
@@ -218,9 +215,15 @@ public class PlayerNetCharacter : NetworkBehaviour
     private void StickToGroundHelper()
     {
         RaycastHit hitInfo;
-        if (Physics.SphereCast(transform.position, m_Capsule.radius * (1.0f - shellOffset), Vector3.down, out hitInfo,
-                               ((m_Capsule.height / 2f) - m_Capsule.radius) +
-                               stickToGroundHelperDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+        var origin = (transform.position + Vector3.up * -0.05f);
+        var size = 0.1f * m_Capsule.radius * (1.0f - shellOffset);
+        var direction = Vector3.down;
+        var maxDistance = 0.1f * ((m_Capsule.height) - m_Capsule.radius) + groundCheckDistance;
+
+        Debug.DrawLine(origin, origin + direction * maxDistance, Color.blue);
+        Debug.DrawLine(origin, origin + direction * size, Color.red);
+
+        if (Physics.SphereCast(origin, size, direction, out hitInfo, maxDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore))
         {
             if (Mathf.Abs(Vector3.Angle(hitInfo.normal, Vector3.up)) < 85f)
             {
