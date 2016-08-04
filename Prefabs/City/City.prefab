@@ -498,7 +498,7 @@ Transform:
   m_GameObject: {fileID: 158600}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 420118}
@@ -515,7 +515,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 123004}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 150, y: 10, z: 160}
+  m_LocalPosition: {x: 150, y: 5, z: 150}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -567,7 +567,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 131872}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -150, y: 10, z: -140}
+  m_LocalPosition: {x: -150, y: 5, z: -150}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -619,7 +619,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 181884}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -150, y: 10, z: 160}
+  m_LocalPosition: {x: -150, y: 5, z: 150}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -632,7 +632,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 190488}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 150, y: 10, z: -140}
+  m_LocalPosition: {x: 150, y: 5, z: -150}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
@@ -1465,6 +1465,10 @@ MonoBehaviour:
   - {fileID: 159806, guid: e8beea4959dd5dc4ab189eed1670ce9b, type: 2}
   - {fileID: 165262, guid: 45219b9ec21da5249b1acfe35c663d60, type: 2}
   - {fileID: 154684, guid: f3efcb7ed4af4464fb6eec2039944f8a, type: 2}
+  Quirks:
+  - {fileID: 173836, guid: 61d52199ccf807a48bf7973e8b4e07b4, type: 2}
+  - {fileID: 132252, guid: 3fc6bbf47d365ce42b7c969cd631bcad, type: 2}
+  - {fileID: 151176, guid: d14336a64bf617e4c917b1c9dd401912, type: 2}
   CountX: 9
   CountY: 9
   SizeX: 5

@@ -35,7 +35,7 @@ public class BossController : NetworkBehaviour {
         //    name = Name;
         //}
 
-        if (isLocalPlayer)
+        if (isLocalPlayer && GameScript.Instance.Started)
         {
             if (VRHead == null)
             {

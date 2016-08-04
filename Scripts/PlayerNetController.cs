@@ -41,9 +41,14 @@ public class PlayerNetController : NetworkBehaviour
     {
         throw new NotImplementedException();
     }
-
-    [SyncVar]
-    public bool GameStarted = false;
+    
+    public bool GameStarted
+    {
+        get
+        {
+            return GameScript.Instance.Started;
+        }
+    }
 
     [SyncVar]
     public Color Color;
