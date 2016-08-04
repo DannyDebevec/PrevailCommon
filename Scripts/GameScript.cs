@@ -40,7 +40,6 @@ public class GameScript : NetworkBehaviour
     {
         if (Started && !Ended)
         {
-            Debug.Log("Started: " + TimeRemaining);
             if (isServer)
             {
                 TimeRemaining -= Time.deltaTime * 10f;

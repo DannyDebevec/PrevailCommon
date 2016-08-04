@@ -4,6 +4,7 @@ using System.Collections;
 using Prevail.Model;
 using UnityStandardAssets.Characters.FirstPerson;
 using System;
+using UnityEngine.UI;
 
 public class PlayerNetController : NetworkBehaviour
 {
@@ -69,6 +70,8 @@ public class PlayerNetController : NetworkBehaviour
 
     public bool offline = false;
 
+    public Text HPText;
+
     public bool IsLocalPlayer
     {
         get
@@ -85,6 +88,7 @@ public class PlayerNetController : NetworkBehaviour
         if (IsLocalPlayer)
         {
             cam = Camera.main;
+            HPText = GameObject.FindGameObjectWithTag("HPText").GetComponent<Text>();
         }
     }
 
@@ -107,6 +111,7 @@ public class PlayerNetController : NetworkBehaviour
             if (Character != null)
             {
                 Camera.main.transform.position = Character.transform.position + (Vector3.up * 0.08f);
+                HPText.text = "HP: " + Character.Health + "/" + Character.MaxHealth;
             }
             else
             {
@@ -116,6 +121,7 @@ public class PlayerNetController : NetworkBehaviour
             {
                 CmdInput(Vertical, Horizontal, Jump, Fire, Reset, Rotation);
             }
+
         }
     }
 

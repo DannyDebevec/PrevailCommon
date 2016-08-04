@@ -26,28 +26,28 @@ public class PlayerNetCharacter : NetworkBehaviour
             {
                 MaxHealth += 30f;
                 Health = MaxHealth;
-                Destroy(col.gameObject);
                 Network.Destroy(col.gameObject);
+                Destroy(col.gameObject); 
                 return;
             }
             else if (col.gameObject.tag == "JumpUpQuirk")
             {
                 JumpForce += 5f;
-                Destroy(col.gameObject);
                 Network.Destroy(col.gameObject);
+                Destroy(col.gameObject);
                 return;
             }
             else if (col.gameObject.tag == "SpeedUpQuirk")
             {
                 MaxVelocity += 0.3f;
-                Destroy(col.gameObject);
                 Network.Destroy(col.gameObject);
+                Destroy(col.gameObject);
                 return;
             }
 
             var dmg = Mathf.Round(Mathf.Clamp(col.relativeVelocity.magnitude * ImpactDamageMultiplier, 0f, ImpactMaxDamage));
 
-            Debug.Log("Hurt: " + col.relativeVelocity.magnitude + ", " + dmg);
+            //Debug.Log("Hurt: " + col.relativeVelocity.magnitude + ", " + dmg);
 
             if (dmg <= ImpactMinDamage)
             {
