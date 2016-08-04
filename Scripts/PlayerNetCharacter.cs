@@ -16,12 +16,10 @@ public class PlayerNetCharacter : NetworkBehaviour
     public float ImpactMaxDamage = 50f;
     public float ImpactDamageMultiplier = 1f;
 
-    public void OnCollisionEnter(Collision col)
+    public void OnTriggerEnter(Collider col)
     {
-        Debug.Log("collision");
-        if (isServer)
+        if(isServer)
         {
-
             if (col.gameObject.tag == "HealthQuirk")
             {
                 Debug.Log("HealthQuirk");
@@ -44,10 +42,17 @@ public class PlayerNetCharacter : NetworkBehaviour
                 NetworkServer.Destroy(col.gameObject);
                 return;
             }
+        }
+    }
 
+
+    public void OnCollisionEnter(Collision col)
+    {
+        if (isServer)
+        {
             var dmg = Mathf.Round(Mathf.Clamp(col.relativeVelocity.magnitude * ImpactDamageMultiplier, 0f, ImpactMaxDamage));
             
-            if (dmg <= ImpactMinDamage)
+            if (dmg <= ImpactMinDamage || m_Jumping)
             {
                 return;
             }

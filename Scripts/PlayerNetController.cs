@@ -40,7 +40,7 @@ public class PlayerNetController : NetworkBehaviour
 
     internal void RpcDie()
     {
-        Debug.Log("Dieded :(");
+        HPText.text = "You are dead! :(";
     }
 
     public bool GameStarted
@@ -112,9 +112,6 @@ public class PlayerNetController : NetworkBehaviour
             {
                 Camera.main.transform.position = Character.transform.position + (Vector3.up * 0.08f);
                 HPText.text = "HP: " + Character.Health + "/" + Character.MaxHealth;
-            }
-            else
-            {
             }
 
             if (!offline && GameStarted)

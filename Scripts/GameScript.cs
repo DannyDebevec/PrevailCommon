@@ -27,7 +27,7 @@ public class GameScript : NetworkBehaviour
     public Text StatusText;
 
     [SyncVar]
-    public string Text;
+    public string Text = "";
 
     // Use this for initialization
     void Start()
@@ -38,9 +38,13 @@ public class GameScript : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!Started)
+        {
+            Text = "Waiting for match start...";
+        }
         if (Started && !Ended)
         {
-            if (isServer)   
+            if (isServer)
             {
                 TimeRemaining -= Time.deltaTime;
 
@@ -58,8 +62,8 @@ public class GameScript : NetworkBehaviour
                 }
             }
 
-            StatusText.text = Text;
         }
+        StatusText.text = Text;
     }
 
     public void StartGame()
