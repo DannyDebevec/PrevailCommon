@@ -40,9 +40,9 @@ public class GameScript : NetworkBehaviour
     {
         if (Started && !Ended)
         {
-            if (isServer)
+            if (isServer)   
             {
-                TimeRemaining -= Time.deltaTime * 10f;
+                TimeRemaining -= Time.deltaTime;
 
                 var areAllCharsDead = Characters.All(c => c.Health <= 0);
 
