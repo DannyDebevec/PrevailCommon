@@ -9,9 +9,7 @@ public class BossController : NetworkBehaviour {
     public Color Color;
     [SyncVar]
     public string Name;
-
-    public BossCharacter Boss;
-
+    
     public GameObject Head;
     public GameObject LHand;
     public GameObject RHand;
@@ -24,8 +22,6 @@ public class BossController : NetworkBehaviour {
 	// Use this for initialization
 	void Start () {
         m_renderer = GetComponent<Renderer>();
-        
-        Boss = new BossCharacter();
     }
     	
 	// Update is called once per frame

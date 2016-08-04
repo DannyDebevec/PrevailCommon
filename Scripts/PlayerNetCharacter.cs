@@ -7,7 +7,46 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerNetCharacter : NetworkBehaviour
 {
-    public float MaxVelocity = 10f;
+    [SyncVar]
+    public float Health = 100f;
+    [SyncVar]
+    public float MaxHealth = 100f;
+
+    public float ImpactMinDamage = 8f;
+    public float ImpactMaxDamage = 50f;
+    public float ImpactDamageMultiplier = 1f;
+
+    public void OnCollisionEnter(Collision col)
+    {
+        Debug.Log("collision");
+        if (isServer)
+        {
+
+            var dmg = Mathf.Round(Mathf.Clamp(col.relativeVelocity.magnitude * ImpactDamageMultiplier, 0f, ImpactMaxDamage));
+
+            Debug.Log("Hurt: " + col.relativeVelocity.magnitude + ", " + dmg);
+
+            if (dmg <= ImpactMinDamage)
+            {
+                return;
+            }
+
+            Health = Mathf.Clamp(Health - dmg, 0f, 100f);
+
+
+            if (Health <= 0)
+            {
+                Controller.RpcDie();
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                Controller.RpcHurt();
+            }
+        }
+    }
+
+    public float MaxVelocity = 1f;
     public float MassMultiplier = 50f;
 
     PlayerNetController controller;
@@ -41,7 +80,7 @@ public class PlayerNetCharacter : NetworkBehaviour
         m_RigidBody = GetComponent<Rigidbody>();
         m_renderer = GetComponent<Renderer>();
     }
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -72,7 +111,7 @@ public class PlayerNetCharacter : NetworkBehaviour
         m_RigidBody.MoveRotation(Quaternion.Euler(new Vector3(0, rotation, 0)));
 
         var localVelociy = transform.InverseTransformDirection(m_RigidBody.velocity);
-        
+
         if (Mathf.Abs(localVelociy.x) < MaxVelocity || (localVelociy.x < 0 && horizontal > 0) || (localVelociy.x > 0 && horizontal < 0))
         {
             m_RigidBody.AddForce(MassMultiplier * (transform.right * horizontal));
@@ -83,7 +122,7 @@ public class PlayerNetCharacter : NetworkBehaviour
         }
         if (horizontal == 0 && vertical == 0)
         {
-            m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x * 0.9f,m_RigidBody.velocity.y,m_RigidBody.velocity.z * 0.9f);
+            m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x * 0.9f, m_RigidBody.velocity.y, m_RigidBody.velocity.z * 0.9f);
         }
 
         if (m_IsGrounded)
@@ -106,8 +145,13 @@ public class PlayerNetCharacter : NetworkBehaviour
                 StickToGroundHelper();
             }
         }
+        
+        var pos = m_RigidBody.position;
+        pos.x = Mathf.Clamp(pos.x, -22f, 22f);
+        pos.z = Mathf.Clamp(pos.z, -22f, 22f);
+        m_RigidBody.position = pos;
     }
-    
+
     private CapsuleCollider m_Capsule;
     private Vector3 m_GroundContactNormal;
     private bool m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
@@ -120,7 +164,7 @@ public class PlayerNetCharacter : NetworkBehaviour
         m_PreviouslyGrounded = m_IsGrounded;
         RaycastHit hitInfo;
 
-        var origin = (transform.position + Vector3.up*-0.05f);
+        var origin = (transform.position + Vector3.up * -0.05f);
         var size = 0.1f * m_Capsule.radius * (1.0f - shellOffset);
         var direction = Vector3.down;
         var maxDistance = 0.1f * ((m_Capsule.height) - m_Capsule.radius) + groundCheckDistance;

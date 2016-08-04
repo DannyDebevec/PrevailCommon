@@ -138,8 +138,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eaa05b45bd282d47b75b8108837704a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxVelocity: 1
-  MassMultiplier: 5
+  Health: 100
+  MaxHealth: 100
+  ImpactMinDamage: 10
+  ImpactMaxDamage: 50
+  ImpactDamageMultiplier: 1
+  MaxVelocity: 3
+  MassMultiplier: 10
   JumpForce: 30
   shellOffset: 0.01
   groundCheckDistance: 0.01

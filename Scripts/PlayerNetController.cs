@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 using Prevail.Model;
 using UnityStandardAssets.Characters.FirstPerson;
+using System;
 
 public class PlayerNetController : NetworkBehaviour
 {
@@ -11,6 +12,12 @@ public class PlayerNetController : NetworkBehaviour
     PlayerNetCharacter character;
     [SyncVar]
     public uint character_nId;
+
+    [ClientRpc]
+    public void RpcHurt()
+    {
+        Debug.Log("Hurt!");
+    }
 
     public PlayerNetCharacter Character
     {
@@ -28,6 +35,11 @@ public class PlayerNetController : NetworkBehaviour
             character = value;
             character_nId = character.GetComponent<NetworkIdentity>().netId.Value;
         }
+    }
+
+    internal void RpcDie()
+    {
+        throw new NotImplementedException();
     }
 
     [SyncVar]
@@ -52,7 +64,9 @@ public class PlayerNetController : NetworkBehaviour
 
     public bool offline = false;
 
-    public bool IsLocalPlayer { get
+    public bool IsLocalPlayer
+    {
+        get
         {
             return offline || base.isLocalPlayer;
         }
@@ -88,6 +102,9 @@ public class PlayerNetController : NetworkBehaviour
             if (Character != null)
             {
                 Camera.main.transform.position = Character.transform.position + Vector3.up * 0.5f;
+            }
+            else
+            {
             }
 
             if (!offline)
